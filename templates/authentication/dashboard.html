@@ -1,0 +1,18 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <h1>Личный кабинет</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="make_order">Оформить заказ</button><br>
+        <button type="submit" name="history_of_orders">История заказов</button><br>
+        <button type="submit" name="support">Техническая поддержка</button><br>
+        <button type="submit" name="logout">Выйти</button>
+    </form>
+</body>
+</html>

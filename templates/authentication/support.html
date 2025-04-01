@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Тех. поддержка</title>
+</head>
+<body>
+
+  {% if messages %}
+  {% for message in messages %}
+    <p style="color: green;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <label for="text">Текст обращения</label>
+    <input type="text" id="text" name="text">
+
+    <button type="submit">Отправить обращение</button>
+  </form>
+
+</body>
+</html>

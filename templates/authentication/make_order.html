@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Оформление заказа</title>
+    </head>
+    <body>
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: green;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% for product in products %}
+            <form action="{% url 'authentication:cart_add' product.id%}" method="POST">
+                {% csrf_token %}
+                <!-- форма выбора товара -->
+
+                {{ product.name }} - Цена: {{ product.price }}
+
+                {{ cart_product_form }}
+
+                <input type="submit" value="Add to cart" name="Add_to_cart">
+
+            </form>
+        {% endfor %}
+
+        <h1>Your shopping cart</h1>
+        <table class="cart">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Кол-во</th>
+                    <th>Стоимость</th>
+                    <th></th>
+<!--                    <th>Price</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    {% with product=item.product %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+
+<!--                            <td class="num">-->
+<!--                                Руб. {{ item.price }}-->
+<!--                            </td>-->
+                            <td class="num">
+                                {{ item.total_price }} Руб.
+                            </td>
+                            <td>
+                                <form action="{% url 'authentication:cart_remove' product.id%}" method="POST">
+                                    <input type="submit" value="Remove">
+                                    {% csrf_token %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+                <tr class="total">
+                    <td>Total</td>
+                    <td colspan="2"></td>
+                    <td class="num">{{ cart.get_total_price }} Руб.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form method="POST">
+            <label for="pickup_point_id">Пункт выдачи:</label>
+            <select name = "pickup_point_id" id="pickup_point_id">
+              {% for pickup_point in pickup_points %}
+                  <option value="{{ pickup_point.id }}">{{ pickup_point.address }}</option>
+              {% endfor %}
+            </select>
+
+            {% csrf_token %}
+            <button type="submit" name="make_ord">Оформить заказ</button>
+        </form>
+
+
+    </body>
+</html>
+

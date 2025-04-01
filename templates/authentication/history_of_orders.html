@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>История заказов</title>
+</head>
+<body>
+    <H1>ИСТОРИЯ ЗАКАЗОВ</H1>
+
+    {% for order in orders%}
+            <li>
+              Заказ - {{ order.id }} <br>
+                    {% for item in orders_item %}
+                        {% if order.id == item.order.id %}
+                          Товар:  {{ item.product }}<br>
+                          Кол-во: {{ item.quantity }}<br>
+                          Цена: {{ item.price }}<br>
+                        {% endif %}
+                    {% endfor %}
+              Сумма заказа: {{ order.amount }}<br>
+              Пункт выдачи: {{ order.pickup_point }}
+            </li>
+    {% empty %}
+      <li>У вас ещё нет заказов</li>
+    {% endfor %}
+
+<!--    {% for item in orders_item %}-->
+<!--        {{ item.order.id }}-->
+<!--        {{ item.product }}-->
+<!--        {{ item.price }}-->
+<!--        {{ item.quantity }}-->
+<!--        <br><br>-->
+<!--    {% endfor %}-->
+</body>
+</html>

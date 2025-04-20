@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <h1>Личный кабинет</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="make_order">Продукты</button><br>
+        <button type="submit" name="history_of_orders">Продавцы</button><br>
+        <button type="submit" name="categories">Категории</button><br>
+        <button type="submit" name="logout">Пункты выдачи</button>
+        <button type="submit" name="logout">Заказы</button>
+        <button type="submit" name="logout">Обращения в ТП</button>
+    </form>
+</body>
+</html>

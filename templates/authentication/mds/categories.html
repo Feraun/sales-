@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for category in categories %}
+      <form action="{% url 'authentication:mds_category_delete' category.id %}" method="POST">
+          {% csrf_token %}
+          {{ category.name }}<br>
+          {{ category.description }}<br>
+          <input type="submit" name="delete_category" value = "Удалить категорию">
+        <br>
+        <br>
+      </form>
+    {% empty %}
+      <li>У вас ещё нет заказов</li>
+    {% endfor %}
+
+    <br>
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="n"><br>
+        <input type="text" name="d"><br>
+        <button type="submit" name="add_category">Добавить категорию</button>
+    </form>
+</body>
+</html>

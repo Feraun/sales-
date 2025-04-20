@@ -1,15 +1,22 @@
-from itertools import product
+from pydoc import describe
 
+from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
 from django.contrib import messages, auth
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.views.decorators.http import require_POST
 
-from .models import Product, Order, Pickup_point, Cart, Support, OrderItem
+from .models import Product, Order, Pickup_point, Cart, Support, OrderItem, Category, Supplier
 from .forms import CartAddProductForm
 from .cart import Cart
+
+def in_group_buyers(user):
+    return user.groups.filter(name='Buyers').exists()
+
+def in_group_managers(user):
+    return user.groups.filter(name='Managers').exists()
 
 # Create your views here.
 def sign_up(request):
@@ -27,8 +34,14 @@ def log_in(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)  # Выполняем вход
-            return redirect('authentication:dashboard')
+
+            login(request, user)
+
+            if in_group_buyers(user):
+                return redirect('authentication:dashboard')
+            if in_group_managers(user):
+                return redirect('authentication:manager_dashboard')
+
     else:
         form = AuthenticationForm()
     return render(request, "authentication/login.html", {"form":form})
@@ -37,9 +50,8 @@ def logout(request):
     if request.method == 'POST':
         return redirect('authentication:login')
 
-@login_required
+@user_passes_test(in_group_buyers)
 def dashboard(request):
-    products = Product.objects.all()
 
     if request.method == 'POST':
         if "logout" in request.POST:
@@ -52,9 +64,9 @@ def dashboard(request):
         if "support" in request.POST:
             return redirect('authentication:support')
 
-    return render(request, 'authentication/dashboard.html', {'products': products})
+    return render(request, 'authentication/dashboard.html')
 
-@login_required
+@user_passes_test(in_group_buyers)
 def make_order(request):
     cart = Cart(request)
 
@@ -115,7 +127,7 @@ def make_order(request):
     }
     )
 
-@login_required
+@user_passes_test(in_group_buyers)
 def history_of_orders(request):
     user_id = request.user.id
     orders = Order.objects.filter(user_id = user_id)
@@ -123,7 +135,7 @@ def history_of_orders(request):
 
     return render(request, 'authentication/history_of_orders.html', {'orders': orders, 'orders_item': orders_item})
 
-@login_required
+@user_passes_test(in_group_buyers)
 def support(request):
 
     if request.method == "POST":
@@ -166,6 +178,45 @@ def cart_remove(request, product_id):
     cart.remove(product)
     return redirect('authentication:make_ord')
 
+
+@user_passes_test(in_group_managers)
+def manager_dashboard(request):
+    # products = Product.objects.all()
+    # orders = Order.objects.all()
+    # categorys = Category.objects.all()
+    # pickup_points = Pickup_point.objects.all()
+    # order_items = OrderItem.objects.all()
+    # supports = Support.objects.all()
+    # suppliers = Supplier.objects.all()
+    if request.method == 'POST':
+        # if "logout" in request.POST:
+        #     auth.logout(request)
+        #     return render(request, 'authentication/logout.html')
+        if "categories" in request.POST:
+            return redirect('authentication:mds_categories')
+
+
+    return render(request, 'authentication/manager_dashboard.html')
+
+@user_passes_test(in_group_managers)
+def mds_categories(request):
+    categories = Category.objects.all()
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        describe = request.POST.get('d')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL add_category(%s, %s)', [name, describe])
+        #print(name, describe)
+        return redirect(request.path)
+
+    return render(request, 'authentication/mds/categories.html', {'categories': categories})
+
+def mds_category_delete(request, category_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_category(%s)', [category_id])
+    return redirect('authentication:mds_categories')
 
 # def cart_detail(request):
 #     cart = Cart(request)

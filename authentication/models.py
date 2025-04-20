@@ -71,6 +71,31 @@ class Support(models.Model):
     def __str__(self):
         return f"Заявление #{self.id} | Пользователь {self.user}"
 
+class Category(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, null = False)
+    description = models.CharField(max_length=255, null = True)
+
+    class Meta:
+        db_table = 'categories'
+        managed = False
+
+    def __str__(self):
+        return f"Категория: {self.name}"
+
+class Supplier(models.Model):
+    id = models.AutoField(primary_key = True)
+    name = models.CharField(max_length=255, null = False)
+    contact_info = models.CharField(max_length=255, null = True)
+    address = models.CharField(max_length=255, null=True)
+
+    class Meta:
+        db_table = 'suppliers'
+        managed = False
+
+    def __str__(self):
+        return f"Продавец: {self.name}"
+
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="cart")
     created_at = models.DateTimeField(auto_now_add=True)

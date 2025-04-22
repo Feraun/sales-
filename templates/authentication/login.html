@@ -1,6 +1,46 @@
-  <h3>Вход</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+  </head>
+  <body>
+    <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Добро пожаловать в "Название"!</h1>
+              <div class="index-banner__subtitle">Войдите в аккаунт, чтобы продолжить</div>
+          </div>
+      </div>
+  </header>
+  <main class="main">
+      <section class="section white-thema">
+          <span>Авторизация</span>
+          <form method="POST">
+              {% csrf_token %}
+              <div>
+                {{ form.username|add_class:"input_place"|attr:"placeholder:Логин" }}
+              </div>
+            
+              <div class="form-group">
+                {{ form.password|add_class:"input_place"|attr:"placeholder:Пароль" }}
+
+              </div>
+
+            <button class="login__button" type="submit" name="login">Вход</button>
+
+            <div>
+              <button class="reg_button" type="submit" name="registration">Нет аккаунта?</button>
+            </div>
+          </form>
+      </section>
+  </main>
+  <footer class="footer">
+      <div class="foot-cop">© Untitled. All rights reserved.</div>
+  </footer>
+  </body>
+</html>
+
+  

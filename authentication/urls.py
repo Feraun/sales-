@@ -5,7 +5,9 @@ app_name = 'authentication'
 
 urlpatterns = [
     path('reg', views.sign_up, name='reg'),
+
     path('login', views.log_in, name='login'),
+    path('', views.log_in),
 
     path('dashboard/', views.dashboard, name='dashboard'),
     path('manager_ds/', views.manager_dashboard, name='manager_dashboard'),

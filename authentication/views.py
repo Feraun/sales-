@@ -32,15 +32,19 @@ def sign_up(request):
 def log_in(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+        if "login" in request.POST:
+            if form.is_valid():
+                user = form.get_user()
 
-            login(request, user)
+                login(request, user)
 
-            if in_group_buyers(user):
-                return redirect('authentication:dashboard')
-            if in_group_managers(user):
-                return redirect('authentication:manager_dashboard')
+                if in_group_buyers(user):
+                    return redirect('authentication:dashboard')
+                if in_group_managers(user):
+                    return redirect('authentication:manager_dashboard')
+
+        if "registration" in request.POST:
+            return redirect('authentication:reg') 
 
     else:
         form = AuthenticationForm()

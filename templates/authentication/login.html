@@ -26,14 +26,15 @@
             
               <div class="form-group">
                 {{ form.password|add_class:"input_place"|attr:"placeholder:Пароль" }}
-
               </div>
 
             <button class="login__button" type="submit" name="login">Вход</button>
-
-            <div>
-              <button class="reg_button" type="submit" name="registration">Нет аккаунта?</button>
-            </div>
+          </form>
+          <form method="POST">
+              {% csrf_token %}
+              <div>
+                    <button class="reg_button" type="submit" name="registration">Нет аккаунта?</button>
+              </div>
           </form>
       </section>
   </main>

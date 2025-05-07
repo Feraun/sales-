@@ -22,7 +22,9 @@ urlpatterns = [
     path('dashboard/logout', views.logout, name='logout'),
 
     path('manager_ds/categories', views.mds_categories, name='mds_categories'),
+    path('manager_ds/categories/edit/<int:category_id>', views.mds_category_edit, name='mds_category_edit'),
     path('manager_ds/categories/delete/<int:category_id>', views.mds_category_delete, name='mds_category_delete')
+
     # path('cart', views.cart_detail, name='cart_detail'),
     # path('cart/add/<int:product_id>', views.cart_add, name='cart_add'),
     # path('cart/remove/<int:product_id>', views.cart_remove, name='cart_remove'),

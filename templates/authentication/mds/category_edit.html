@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование категории</title>
+</head>
+<body>
+      <form method="POST">
+        {% csrf_token %}
+        <label for="name">Название:</label><br>
+        <input type="text" name="n" id="name" value="{{ category.name }}" required><br><br>
+
+        <label for="description">Описание:</label><br>
+        <input type="text" name="d" id="description" value="{{ category.description }}"><br><br>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+</body>
+</html>

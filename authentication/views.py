@@ -218,7 +218,64 @@ def mds_categories(request):
 
     return render(request, 'authentication/mds/categories.html', {'categories': categories})
 
+def mds_category_edit(request, category_id):
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        describe = request.POST.get('d')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL edit_category(%s, %s, %s)', [category_id, name, describe])
+        #print(name, describe)
+        return redirect('authentication:mds_categories')
+
+    category = Category.objects.get(id = category_id)
+
+    return render(request, 'authentication/mds/category_edit.html', {'category': category})
+
 def mds_category_delete(request, category_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_category(%s)', [category_id])
+    return redirect('authentication:mds_categories')
+
+@user_passes_test(in_group_managers)
+def mds_products(request):
+    products = Product.objects.all()
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        describe = request.POST.get('d')
+        price = request.POST.get('p')
+        stock_quantity = request.POST.get('sq')
+        category_id = request.POST.get('cid')
+        supplier_id = request.POST.get('sid')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL add_category(%s, %s)', [name, describe])
+        #print(name, describe)
+        return redirect(request.path)
+
+    categories = Category.objects.all()
+    suppliers = Supplier.objects.all()
+
+    return render(request, 'authentication/mds/categories.html', { 'products': products, 'categories': categories, 'suppliers': suppliers})
+
+def mds_product_edit(request, category_id):
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        describe = request.POST.get('d')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL edit_category(%s, %s, %s)', [category_id, name, describe])
+        #print(name, describe)
+        return redirect('authentication:mds_categories')
+
+    category = Category.objects.get(id = category_id)
+
+    return render(request, 'authentication/mds/category_edit.html', {'category': category})
+
+def mds_product_delete(request, category_id):
     with connection.cursor() as cursor:
         cursor.execute('CALL delete_category(%s)', [category_id])
     return redirect('authentication:mds_categories')

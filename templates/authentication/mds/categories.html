@@ -10,10 +10,14 @@
           {% csrf_token %}
           {{ category.name }}<br>
           {{ category.description }}<br>
+
+          <a href="{% url 'authentication:mds_category_edit' category.id %}">Редактировать</a>
+
           <input type="submit" name="delete_category" value = "Удалить категорию">
         <br>
         <br>
       </form>
+
     {% empty %}
       <li>У вас ещё нет заказов</li>
     {% endfor %}
@@ -23,7 +27,7 @@
 
     <form method="POST">
         {% csrf_token %}
-        <input type="text" name="n"><br>
+        <input type="text" name="n" required><br>
         <input type="text" name="d"><br>
         <button type="submit" name="add_category">Добавить категорию</button>
     </form>

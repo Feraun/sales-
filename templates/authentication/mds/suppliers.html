@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for supplier in suppliers %}
+      <form action="{% url 'authentication:mds_supplier_delete' supplier.id %}" method="POST">
+          {% csrf_token %}
+          {{ supplier.name }}<br>
+          {{ supplier.contact_info }}<br>
+          {{ supplier.address }}<br>
+
+
+          <a href="{% url 'authentication:mds_supplier_edit' supplier.id %}">Редактировать</a>
+
+          <input type="submit" name="delete_supplier" value = "Удалить продавца">
+        <br>
+        <br>
+      </form>
+
+    {% empty %}
+      <li>Продукт нет</li>
+    {% endfor %}
+
+    <br>
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="n" required placeholder="Название"><br>
+        <input type="text" name="d" placeholder="Контактная информация" required><br>
+        <input type="text" name="p" placeholder="Адрес" required><br>
+        <button type="submit" name="add_product">Добавить продавца</button>
+    </form>
+</body>
+</html>

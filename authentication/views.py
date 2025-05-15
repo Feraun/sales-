@@ -4,6 +4,7 @@ from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.views.decorators.http import require_POST
@@ -91,7 +92,8 @@ def make_order(request):
                 OrderItem.objects.create(order=order,
                                          product = item['product'],
                                          price = item['price'],
-                                         quantity = item['quantity'])
+                                         quantity = item['quantity'],
+                                         amount_item = item['price'] * item['quantity'])
 
             cart.clear()
 
@@ -193,12 +195,21 @@ def manager_dashboard(request):
     # order_items = OrderItem.objects.all()
     # supports = Support.objects.all()
     # suppliers = Supplier.objects.all()
+
     if request.method == 'POST':
         # if "logout" in request.POST:
         #     auth.logout(request)
         #     return render(request, 'authentication/logout.html')
         if "categories" in request.POST:
             return redirect('authentication:mds_categories')
+        elif "products" in request.POST:
+            return redirect('authentication:mds_products')
+        elif "suppliers" in request.POST:
+            return redirect('authentication:mds_suppliers')
+        elif "pickup_points" in request.POST:
+            return redirect('authentication:mds_pickup_points')
+        elif "orders" in request.POST:
+            return redirect('authentication:mds_orders')
 
 
     return render(request, 'authentication/manager_dashboard.html')
@@ -251,34 +262,152 @@ def mds_products(request):
         supplier_id = request.POST.get('sid')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL add_category(%s, %s)', [name, describe])
-        #print(name, describe)
+             cursor.execute('CALL add_product(%s, %s, %s, %s, %s, %s)', [name, describe, price, stock_quantity, category_id, supplier_id])
+
         return redirect(request.path)
 
-    categories = Category.objects.all()
-    suppliers = Supplier.objects.all()
+    # categories = Category.objects.all()
+    # suppliers = Supplier.objects.all()
 
-    return render(request, 'authentication/mds/categories.html', { 'products': products, 'categories': categories, 'suppliers': suppliers})
+    return render(request, 'authentication/mds/products.html', { 'products': products})
 
-def mds_product_edit(request, category_id):
+def mds_product_edit(request, product_id):
 
     if request.method == "POST":
         name = request.POST.get('n')
         describe = request.POST.get('d')
+        price = request.POST.get('p')
+        stock_quantity = request.POST.get('sq')
+        category_id = request.POST.get('cid')
+        supplier_id = request.POST.get('sid')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL edit_category(%s, %s, %s)', [category_id, name, describe])
+             cursor.execute('CALL edit_product(%s, %s, %s, %s, %s, %s)', [name, describe, price, stock_quantity, category_id, supplier_id])
         #print(name, describe)
-        return redirect('authentication:mds_categories')
+        return redirect('authentication:mds_products')
 
-    category = Category.objects.get(id = category_id)
+    product = Product.objects.get(id = product_id)
 
-    return render(request, 'authentication/mds/category_edit.html', {'category': category})
+    return render(request, 'authentication/mds/product_edit.html', {'product': product})
 
-def mds_product_delete(request, category_id):
+def mds_product_delete(request, product_id):
     with connection.cursor() as cursor:
-        cursor.execute('CALL delete_category(%s)', [category_id])
-    return redirect('authentication:mds_categories')
+        cursor.execute('CALL delete_product(%s)', [product_id])
+    return redirect('authentication:mds_products')
+
+@user_passes_test(in_group_managers)
+def mds_suppliers(request):
+    suppliers = Supplier.objects.all()
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        contact_info = request.POST.get('ci')
+        address = request.POST.get('a')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL add_supplier(%s, %s, %s)', [name, contact_info, address])
+
+        return redirect(request.path)
+
+    # categories = Category.objects.all()
+    # suppliers = Supplier.objects.all()
+
+    return render(request, 'authentication/mds/suppliers.html', { 'suppliers': suppliers })
+
+def mds_supplier_edit(request, supplier_id):
+
+    if request.method == "POST":
+        name = request.POST.get('n')
+        contact_info = request.POST.get('ci')
+        address = request.POST.get('a')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL edit_supplier(%s, %s, %s)', [name, contact_info, address])
+        #print(name, describe)
+        return redirect('authentication:mds_suppliers')
+
+    supplier = Supplier.objects.get(id = supplier_id)
+
+    return render(request, 'authentication/mds/supplier_edit.html', {'supplier': supplier})
+
+def mds_supplier_delete(request, supplier_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_supplier(%s)', [supplier_id])
+    return redirect('authentication:mds_suppliers')
+
+@user_passes_test(in_group_managers)
+def mds_pickup_points(request):
+    pickup_points = Pickup_point.objects.all()
+
+    if request.method == "POST":
+        address = request.POST.get('a')
+        phone = request.POST.get('p')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL add_supplier(%s, %s)', [address, phone])
+
+        return redirect(request.path)
+
+    # categories = Category.objects.all()
+    # suppliers = Supplier.objects.all()
+
+    return render(request, 'authentication/mds/pickup_points.html', { 'pickup_points': pickup_points })
+
+def mds_pickup_point_edit(request, pickup_point_id):
+
+    if request.method == "POST":
+        address = request.POST.get('a')
+        phone = request.POST.get('p')
+
+        with connection.cursor() as cursor:
+             cursor.execute('CALL edit_pickup_point(%s, %s, %s)', [address, phone])
+        #print(name, describe)
+        return redirect('authentication:mds_pickup_points')
+
+    pickup_point = Pickup_point.objects.get(id = pickup_point_id)
+
+    return render(request, 'authentication/mds/pickup_point_edit.html', {'pickup_point': pickup_point})
+
+def mds_pickup_point_delete(request, pickup_point_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_pickup_points(%s)', [pickup_point_id])
+    return redirect('authentication:mds_pickup_points')
+
+@user_passes_test(in_group_managers)
+def mds_orders(request):
+    orders = Order.objects.all()
+    orders_items = OrderItem.objects.all()
+
+    users = User.objects.all()
+
+    if request.method == "POST":
+        return redirect('authentication:mds_order')
+
+
+    return render(request, 'authentication/mds/orders.html', {'orders': orders, 'orders_items': orders_items})
+
+def mds_order(request, order_id):
+    order = Order.objects.get(id = order_id)
+    order_items = OrderItem.objects.filter(order = order)
+
+    if request.method == 'POST':
+        quantities = request.POST.getlist('quantities')
+
+        for order_item, quantity in zip(order_items, quantities):
+            with connection.cursor() as cursor:
+                cursor.execute('CALL update_order_item_quantity(%s, %s)', [order_item.id, int(quantity)])
+
+        return redirect(request.path)
+
+    return render(request, 'authentication/mds/order.html', {'order': order ,'order_items': order_items})
+
+def mds_order_editing(request, order_id, order_item_id):
+    return redirect(request.path)
+
+def mds_order_delete(request, order_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_order(%s)', [order_id])
+    return redirect('authentication:mds_orders')
 
 # def cart_detail(request):
 #     cart = Cart(request)

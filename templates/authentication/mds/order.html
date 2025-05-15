@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказы</title>
+</head>
+<body>
+
+          Заказ № {{ order.id }}
+          Пользователь: {{ order.user }}
+
+        <br>
+        <br>
+          <form method="POST">
+              {% csrf_token %}
+              {% for order_item in order_items %}
+
+                    {{ order_item.product }}
+              <br>
+                    {{ order_item.price }} р/ш
+              <br>
+                    <label for="quantity_{{ order_item.id }}">Кол-во:</label><br>
+                    <input type="number" name="quantities" id="quantity_{{ order_item.id }}"
+                           value="{{ order_item.quantity }}" min="1">
+
+        <br><br><br>
+              {% endfor %}
+              <input type="submit" value="Сохранить изменения">
+          </form>
+          <br>
+          Общая сумма {{ order.amount }}
+          <br>
+          Пункт выдачи {{ order.pickup_point }}
+            <br>
+          <br>
+      <form action="{% url 'authentication:mds_order_delete' order.id %}" method="POST">
+          {% csrf_token %}
+        <input type="submit" value="Удалить заказ">
+      </form>
+
+    <br>
+    <br>
+</body>
+</html>

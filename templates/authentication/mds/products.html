@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for product in products %}
+      <form action="{% url 'authentication:mds_product_delete' product.id %}" method="POST">
+          {% csrf_token %}
+          {{ product.name }}<br>
+          {{ product.description }}<br>
+          {{ product.price }}<br>
+          {{ product.stock_quantity }}<br>
+          {{ product.category_id }}<br>
+          {{ product.supplier_id }}<br>
+
+          <a href="{% url 'authentication:mds_product_edit' product.id %}">Редактировать</a>
+
+          <input type="submit" name="delete_product" value = "Удалить продукт">
+        <br>
+        <br>
+      </form>
+
+    {% empty %}
+      <li>Продукт нет</li>
+    {% endfor %}
+
+    <br>
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="n" required placeholder="Название"><br>
+        <input type="text" name="d" placeholder="Описание"><br>
+        <input type="number" name="p" placeholder="Цена" required><br>
+        <input type="number" name="sq" placeholder="Остаток товара" required><br>
+        <input type="number" name="cid" placeholder="Категория товара" required><br>
+        <input type="number" name="sid" placeholder="ID продавца" required><br>
+        <button type="submit" name="add_product">Добавить продукт</button>
+    </form>
+</body>
+</html>

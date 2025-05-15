@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказы</title>
+</head>
+<body>
+    {% for order in orders %}
+      <form action="{% url 'authentication:mds_order' order.id %}" method="POST">
+          {% csrf_token %}
+
+          Заказ: {{ order.id }} Пользователя: {{ order.user }}
+
+          <input type="submit" value = "Просмотр заказа">
+        <br>
+        <br>
+      </form>
+
+    {% empty %}
+      <li>Заказов нет</li>
+    {% endfor %}
+</body>
+</html>

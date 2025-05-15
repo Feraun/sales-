@@ -38,6 +38,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, related_name='order_items', on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+    amount_item = models.DecimalField(max_digits=10, decimal_places = 2)
 
     def __str__(self):
         return str(self.id)
@@ -48,7 +49,7 @@ class OrderItem(models.Model):
 
 class Pickup_point(models.Model):
     id = models.AutoField(primary_key=True)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, null = False)
     phone = models.CharField(null=True)
 
     class Meta:

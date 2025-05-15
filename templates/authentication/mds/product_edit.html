@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование категории</title>
+</head>
+<body>
+      <form method="POST">
+        {% csrf_token %}
+        <label for="name">Название:</label><br>
+        <input type="text" name="n" id="name" value="{{ product.name }}" required><br><br>
+
+        <label for="description">Описание:</label><br>
+        <input type="text" name="d" id="description" value="{{ product.description }}"><br><br>
+
+        <label for="stock_quantity">Цена:</label><br>
+        <input type="number" name="p" id="stock_quantity" value="{{ product.stock_quantity }}"><br><br>
+
+        <label for="category_id">Цена:</label><br>
+        <input type="number" name="p" id="category_id" value="{{ product.category_id }}"><br><br>
+
+        <label for="supplier_id">Цена:</label><br>
+        <input type="number" name="p" id="supplier_id" value="{{ product.supplier_id }}"><br><br>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+</body>
+</html>

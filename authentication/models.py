@@ -20,11 +20,23 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class Pickup_point(models.Model):
+    id = models.AutoField(primary_key=True)
+    address = models.CharField(max_length=255, null = False)
+    phone = models.CharField(null=True)
+
+    class Meta:
+        db_table = 'pickup_points'
+        managed = False
+
+    def __str__(self):
+        return f"Пункт выдачи | Адрес: {self.address}"
+
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
     amount = models.IntegerField()
-    pickup_point = models.CharField(max_length=255)
+    pickup_point = models.ForeignKey(Pickup_point, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'orders'
@@ -47,18 +59,6 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
 
-class Pickup_point(models.Model):
-    id = models.AutoField(primary_key=True)
-    address = models.CharField(max_length=255, null = False)
-    phone = models.CharField(null=True)
-
-    class Meta:
-        db_table = 'pickup_points'
-        managed = False
-
-    def __str__(self):
-        return f"Пункт выдачи | Адрес: {self.address}"
-
 class Support(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
@@ -66,7 +66,7 @@ class Support(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'support'
+        db_table = 'supports'
         managed = False
 
     def __str__(self):

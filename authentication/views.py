@@ -1,12 +1,10 @@
-from pydoc import describe
-
 from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
 
 from .models import Product, Order, Pickup_point, Cart, Support, OrderItem, Category, Supplier
@@ -85,7 +83,7 @@ def make_order(request):
             order = Order.objects.create(
                 user_id=request.user.id,
                 amount=cart.get_total_price(),
-                pickup_point=pickup_point.address,
+                pickup_point=pickup_point,
             )
 
             for item in cart:
@@ -99,25 +97,6 @@ def make_order(request):
 
             messages.success(request, "Ваш заказ успешно оформлен!")
             return redirect(request.path)
-
-            # product_id = request.POST.get('product_id')
-            # quantity_str = request.POST.get('quantity', '1')
-            #
-            #
-            # try:
-            #     quantity = int(quantity_str)
-            # except ValueError:
-            #     quantity = 1
-            #
-            # product = Product.objects.get(id=product_id)
-            # total_amount = product.price * quantity
-            #
-            # pickup_point = Pickup_point.objects.get(id = pickup_point_id)
-            #
-            #
-            #
-            # messages.success(request, "Ваш заказ успешно оформлен!")
-            # return redirect(request.path)  # PRG: перенаправляем на тот же URL
 
     products = Product.objects.all()
     pickup_points = Pickup_point.objects.all()
@@ -210,6 +189,8 @@ def manager_dashboard(request):
             return redirect('authentication:mds_pickup_points')
         elif "orders" in request.POST:
             return redirect('authentication:mds_orders')
+        elif "supports" in request.POST:
+            return redirect('authentication:mds_supports')
 
 
     return render(request, 'authentication/manager_dashboard.html')
@@ -282,7 +263,7 @@ def mds_product_edit(request, product_id):
         supplier_id = request.POST.get('sid')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL edit_product(%s, %s, %s, %s, %s, %s)', [name, describe, price, stock_quantity, category_id, supplier_id])
+             cursor.execute('CALL edit_product(%s, %s, %s, %s, %s, %s, %s)', [product_id, name, describe, price, stock_quantity, category_id, supplier_id])
         #print(name, describe)
         return redirect('authentication:mds_products')
 
@@ -291,9 +272,15 @@ def mds_product_edit(request, product_id):
     return render(request, 'authentication/mds/product_edit.html', {'product': product})
 
 def mds_product_delete(request, product_id):
-    with connection.cursor() as cursor:
-        cursor.execute('CALL delete_product(%s)', [product_id])
-    return redirect('authentication:mds_products')
+    order_items = OrderItem.objects.all()
+
+    if OrderItem.objects.filter(product_id=product_id).exists():
+        return redirect('authentication:mds_products')
+        # Можно передать сообщение в шаблон, если хочешь показать это пользователю
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute('CALL delete_product(%s)', [product_id])
+        return redirect('authentication:mds_products')
 
 @user_passes_test(in_group_managers)
 def mds_suppliers(request):
@@ -322,7 +309,7 @@ def mds_supplier_edit(request, supplier_id):
         address = request.POST.get('a')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL edit_supplier(%s, %s, %s)', [name, contact_info, address])
+             cursor.execute('CALL edit_supplier(%s, %s, %s, %s)', [supplier_id, name, contact_info, address])
         #print(name, describe)
         return redirect('authentication:mds_suppliers')
 
@@ -344,7 +331,7 @@ def mds_pickup_points(request):
         phone = request.POST.get('p')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL add_supplier(%s, %s)', [address, phone])
+             cursor.execute('CALL add_pickup_point(%s, %s)', [address, phone])
 
         return redirect(request.path)
 
@@ -360,7 +347,7 @@ def mds_pickup_point_edit(request, pickup_point_id):
         phone = request.POST.get('p')
 
         with connection.cursor() as cursor:
-             cursor.execute('CALL edit_pickup_point(%s, %s, %s)', [address, phone])
+             cursor.execute('CALL edit_pickup_point(%s, %s, %s)', [pickup_point_id, address, phone])
         #print(name, describe)
         return redirect('authentication:mds_pickup_points')
 
@@ -370,7 +357,7 @@ def mds_pickup_point_edit(request, pickup_point_id):
 
 def mds_pickup_point_delete(request, pickup_point_id):
     with connection.cursor() as cursor:
-        cursor.execute('CALL delete_pickup_points(%s)', [pickup_point_id])
+        cursor.execute('CALL delete_pickup_point(%s)', [pickup_point_id])
     return redirect('authentication:mds_pickup_points')
 
 @user_passes_test(in_group_managers)
@@ -401,14 +388,17 @@ def mds_order(request, order_id):
 
     return render(request, 'authentication/mds/order.html', {'order': order ,'order_items': order_items})
 
-def mds_order_editing(request, order_id, order_item_id):
-    return redirect(request.path)
-
 def mds_order_delete(request, order_id):
     with connection.cursor() as cursor:
         cursor.execute('CALL delete_order(%s)', [order_id])
     return redirect('authentication:mds_orders')
 
-# def cart_detail(request):
-#     cart = Cart(request)
-#     return render(request, 'authentication/detail.html', {'cart': cart})
+def mds_supports(request):
+    supports = Support.objects.all()
+
+    return render(request, 'authentication/mds/supports.html', {"supports": supports})
+
+def mds_support_delete(request, support_id):
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_support(%s)', [support_id])
+    return redirect('authentication:mds_supports')

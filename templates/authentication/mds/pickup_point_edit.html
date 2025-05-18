@@ -9,10 +9,10 @@
         {% csrf_token %}
 
         <label for="address">Адрес:</label><br>
-        <input type="text" name="ci" id="address" value="{{ pickup_point.address }}"><br><br>
+        <input type="text" name="a" id="address" value="{{ pickup_point.address }}"><br><br>
 
         <label for="phone">Номер телефона:</label><br>
-        <input type="text" name="a" id="phone" value="{{ pickup_point.phone }}" required><br><br>
+        <input type="text" name="p" id="phone" value="{{ pickup_point.phone }}" required><br><br>
 
         <button type="submit">Сохранить изменения</button>
     </form>

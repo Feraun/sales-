@@ -42,8 +42,10 @@ urlpatterns = [
 
     path('manager_ds/orders', views.mds_orders, name='mds_orders'),
     path('manager_ds/order/<int:order_id>', views.mds_order, name='mds_order'),
-    path('manager_ds/order_editing/<int:order_id>', views.mds_order_editing, name='mds_order_editing'),
-    path('manager_ds/order/delete/<int:order_id>', views.mds_order_delete, name='mds_order_delete')
+    path('manager_ds/order/delete/<int:order_id>', views.mds_order_delete, name='mds_order_delete'),
+
+    path('manager_ds/supports', views.mds_supports, name='mds_supports'),
+    path('manager_ds/support/delete/<int:support_id>', views.mds_support_delete, name='mds_support_delete')
 
     # path('cart', views.cart_detail, name='cart_detail'),
     # path('cart/add/<int:product_id>', views.cart_add, name='cart_add'),

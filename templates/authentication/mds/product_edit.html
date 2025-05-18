@@ -13,14 +13,17 @@
         <label for="description">Описание:</label><br>
         <input type="text" name="d" id="description" value="{{ product.description }}"><br><br>
 
-        <label for="stock_quantity">Цена:</label><br>
-        <input type="number" name="p" id="stock_quantity" value="{{ product.stock_quantity }}"><br><br>
+        <label for="price">Цена:</label><br>
+        <input type="number" name="p" id="price" value="{{ product.price }}"><br><br>
 
-        <label for="category_id">Цена:</label><br>
-        <input type="number" name="p" id="category_id" value="{{ product.category_id }}"><br><br>
+        <label for="stock_quantity">Остаток:</label><br>
+        <input type="number" name="sq" id="stock_quantity" value="{{ product.stock_quantity }}"><br><br>
 
-        <label for="supplier_id">Цена:</label><br>
-        <input type="number" name="p" id="supplier_id" value="{{ product.supplier_id }}"><br><br>
+        <label for="category_id">Категория:</label><br>
+        <input type="number" name="cid" id="category_id" value="{{ product.category_id }}"><br><br>
+
+        <label for="supplier_id">Продавец:</label><br>
+        <input type="number" name="sid" id="supplier_id" value="{{ product.supplier_id }}"><br><br>
 
         <button type="submit">Сохранить изменения</button>
     </form>

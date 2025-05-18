@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Заявки в тех. поддержку</title>
+</head>
+<body>
+    {% for support in supports %}
+    <form action="{% url 'authentication:mds_support_delete' support.id %}" method="POST">
+      {% csrf_token %}
+    Дата: {{ support.created_at }}
+    <br>
+    Пользователь: {{ support.user_id }}
+    <br>
+    Текст обращения: {{ support.text_complaint }}
+
+      <br>
+      <input type="submit" name="delete_support" value = "Удалить обращение">
+      <br><br>
+      </form>
+    {% empty %}
+    Заявок в ТП нет!
+    {% endfor %}
+
+
+</body>
+</html>

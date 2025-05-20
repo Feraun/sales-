@@ -12,8 +12,8 @@
           {{ product.description }}<br>
           {{ product.price }}<br>
           {{ product.stock_quantity }}<br>
-          {{ product.category_id }}<br>
-          {{ product.supplier_id }}<br>
+          {{ product.category }}<br>
+          {{ product.supplier }}<br>
 
           <a href="{% url 'authentication:mds_product_edit' product.id %}">Редактировать</a>
 

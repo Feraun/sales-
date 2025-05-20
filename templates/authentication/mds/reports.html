@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for oi in orderitems %}
+
+        Товар {{ oi.product__name }}
+        <br>
+        Продавец {{ oi.product__supplier__name }}
+        <br>
+        Кол-во проданных {{ oi.total_sold }}
+
+        <br><br>
+    {% empty %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="report" value = "Показать отчет">
+        </form>
+    {% endfor %}
+</body>
+</html>

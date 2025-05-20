@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
+from django.db.models import Sum, Value
+from django.db.models.functions import Coalesce
 
 from .models import Product, Order, Pickup_point, Cart, Support, OrderItem, Category, Supplier
 from .forms import CartAddProductForm
@@ -402,3 +404,14 @@ def mds_support_delete(request, support_id):
     with connection.cursor() as cursor:
         cursor.execute('CALL delete_support(%s)', [support_id])
     return redirect('authentication:mds_supports')
+
+def reports(request):
+    if request.method == 'POST':
+        orderitems = (OrderItem.objects
+                      .values('product__name', 'product__supplier__name')
+                      .annotate(total_sold=Sum('quantity'))
+                      .order_by('-total_sold'))
+
+        return render(request,'authentication/mds/reports.html', {'orderitems': orderitems})
+    else:
+        return render(request, 'authentication/mds/reports.html')

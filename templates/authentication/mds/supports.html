@@ -1,27 +1,47 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
     <title>Заявки в тех. поддержку</title>
 </head>
 <body>
-    {% for support in supports %}
-    <form action="{% url 'authentication:mds_support_delete' support.id %}" method="POST">
-      {% csrf_token %}
-    Дата: {{ support.created_at }}
-    <br>
-    Пользователь: {{ support.user_id }}
-    <br>
-    Текст обращения: {{ support.text_complaint }}
 
-      <br>
-      <input type="submit" name="delete_support" value = "Удалить обращение">
-      <br><br>
+  <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Заявки в техническую поддержку</h1>
+          </div>
+      </div>
+    </header>
+    <div class="support-list">
+  {% for support in supports %}
+    <div class="support-card">
+      <form action="{% url 'authentication:mds_support_delete' support.id %}" method="POST">
+        {% csrf_token %}
+        <p><strong>Дата:</strong> {{ support.created_at }}</p>
+        <p><strong>Пользователь:</strong> {{ support.user_id }}</p>
+        <p><strong>Текст обращения:</strong> {{ support.text_complaint }}</p>
+
+        <input type="submit" name="delete_support" value="Удалить обращение" class="delete-button">
       </form>
-    {% empty %}
-    Заявок в ТП нет!
-    {% endfor %}
+    </div>
+  {% empty %}
+    <p>Заявок в ТП нет!</p>
+  {% endfor %}
+</div>
 
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+
+
+    <footer class="footer">
+      <div class="foot-cop">© Untitled. All rights reserved.</div>
+  </footer>
 
 </body>
 </html>

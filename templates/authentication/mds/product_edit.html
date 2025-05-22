@@ -1,31 +1,55 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Редактирование категории</title>
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+    <title>Учет продуктов</title>
 </head>
 <body>
-      <form method="POST">
-        {% csrf_token %}
-        <label for="name">Название:</label><br>
-        <input type="text" name="n" id="name" value="{{ product.name }}" required><br><br>
 
-        <label for="description">Описание:</label><br>
-        <input type="text" name="d" id="description" value="{{ product.description }}"><br><br>
+    <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Учет продуктов</h1>
+          </div>
+      </div>
+    </header>
 
-        <label for="price">Цена:</label><br>
-        <input type="number" name="p" id="price" value="{{ product.price }}"><br><br>
+      <div class="category-edit-form">
+  <h3>Редактировать продукт</h3>
+  <form method="POST">
+    {% csrf_token %}
 
-        <label for="stock_quantity">Остаток:</label><br>
-        <input type="number" name="sq" id="stock_quantity" value="{{ product.stock_quantity }}"><br><br>
+    <label for="name">Название:</label><br>
+    <input type="text" name="n" id="name" value="{{ product.name }}" required><br><br>
 
-        <label for="category_id">Категория:</label><br>
-        <input type="number" name="cid" id="category_id" value="{{ product.category_id }}"><br><br>
+    <label for="description">Описание:</label><br>
+    <input type="text" name="d" id="description" value="{{ product.description }}"><br><br>
 
-        <label for="supplier_id">Продавец:</label><br>
-        <input type="number" name="sid" id="supplier_id" value="{{ product.supplier_id }}"><br><br>
+    <label for="price">Цена:</label><br>
+    <input type="number" name="p" id="price" value="{{ product.price }}"><br><br>
 
-        <button type="submit">Сохранить изменения</button>
-    </form>
+    <label for="stock_quantity">Остаток:</label><br>
+    <input type="number" name="sq" id="stock_quantity" value="{{ product.stock_quantity }}"><br><br>
+
+    <label for="category_id">Категория:</label><br>
+    <input type="number" name="cid" id="category_id" value="{{ product.category_id }}"><br><br>
+
+    <label for="supplier_id">Продавец:</label><br>
+    <input type="number" name="sid" id="supplier_id" value="{{ product.supplier_id }}"><br><br>
+
+    <button type="submit" class="save-button" name="edit_product">Сохранить изменения</button>
+  </form>
+</div>
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+<footer class="footer">
+      <div class="foot-cop">© Harmony. All rights reserved.</div>
+  </footer>
+
 </body>
 </html>

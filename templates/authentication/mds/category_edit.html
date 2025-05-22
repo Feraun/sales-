@@ -1,19 +1,43 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
     <title>Редактирование категории</title>
 </head>
 <body>
-      <form method="POST">
+
+    <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Просмотр категорий</h1>
+          </div>
+      </div>
+    </header>
+
+      <div class="category-edit-form">
+    <h3>Редактировать категорию</h3>
+    <form method="POST">
         {% csrf_token %}
+
         <label for="name">Название:</label><br>
         <input type="text" name="n" id="name" value="{{ category.name }}" required><br><br>
 
         <label for="description">Описание:</label><br>
         <input type="text" name="d" id="description" value="{{ category.description }}"><br><br>
 
-        <button type="submit">Сохранить изменения</button>
+        <button type="submit" class="save-button">Сохранить изменения</button>
     </form>
+</div>
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+<footer class="footer">
+    <div class="foot-cop">© Harmony. All rights reserved.</div>
+</footer>
+
 </body>
 </html>

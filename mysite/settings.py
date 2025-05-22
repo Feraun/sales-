@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sales_management_system',         # например, sales_db
         'USER': 'postgres',
-        'PASSWORD': 'qw1237890',
+        'PASSWORD': '1237890zx',
         'HOST': 'localhost',              # или другой адрес сервера БД
         'PORT': '5433',
         # стандартный порт PostgreSQL

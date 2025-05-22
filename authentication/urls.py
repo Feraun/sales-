@@ -21,7 +21,6 @@ urlpatterns = [
     path('dashboard/logout', views.logout, name='logout'),
 
 
-
     path('manager_ds/', views.manager_dashboard, name='manager_dashboard'),
 
     path('manager_ds/categories', views.mds_categories, name='mds_categories'),
@@ -46,9 +45,13 @@ urlpatterns = [
 
     path('manager_ds/supports', views.mds_supports, name='mds_supports'),
     path('manager_ds/support/delete/<int:support_id>', views.mds_support_delete, name='mds_support_delete'),
+<<<<<<< Updated upstream
 
     path('manager_ds/reports', views.reports, name='mds_reports')
+=======
+>>>>>>> Stashed changes
 
+    path('manager_ds/reports', views.reports, name='mds_reports')
     # path('cart', views.cart_detail, name='cart_detail'),
     # path('cart/add/<int:product_id>', views.cart_add, name='cart_add'),
     # path('cart/remove/<int:product_id>', views.cart_remove, name='cart_remove'),

@@ -1,38 +1,54 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
         <title>Оформление заказа</title>
     </head>
     <body>
+        <header class="header">
+            <div class="index-banner">
+                <div class="index-banner__text">
+                    <h1 class="index-banner__title">Ваша корзина</h1>
+                </div>
+            </div>
+        </header>
         {% if messages %}
-            {% for message in messages %}
-                <p style="color: green;">{{ message }}</p>
-            {% endfor %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="message">{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
-
-        {% for product in products %}
-            <form action="{% url 'authentication:cart_add' product.id%}" method="POST">
-                {% csrf_token %}
-                <!-- форма выбора товара -->
-
-                {{ product.name }} - Цена: {{ product.price }}
-
-                {{ cart_product_form }}
-
-                <input type="submit" value="Add to cart" name="Add_to_cart">
-
-            </form>
-        {% endfor %}
-
-        <h1>Your shopping cart</h1>
+        <h2 style="text-align: center; margin: 40px;">Товары</h2>
+        <div class="products">
+            {% for product in products %}
+                <div class="product">
+                    <form action="{% url 'authentication:cart_add' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <p><strong>
+                            {{ product.name }}</strong> — {{ product.price }} Руб.
+                        </p>
+                        {{ cart_product_form }}
+                        <div>
+                            <input type="submit" value="Добавить в корзину" class="login__button" style="font-size: 0.7rem; padding: 0.4rem 1rem; ;" >
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <h2 style="text-align: center; margin: 40px;">
+            Ваша корзина
+        </h2>
         <table class="cart">
             <thead>
                 <tr>
                     <th>Товар</th>
                     <th>Кол-во</th>
                     <th>Стоимость</th>
-                    <th></th>
+                    <th>Действие</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,39 +57,47 @@
                         <tr>
                             <td>{{ product.name }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td class="num">
-                                {{ item.total_price }} Руб.
-                            </td>
+                            <td>{{ item.total_price }} Руб.</td>
                             <td>
-                                <form action="{% url 'authentication:cart_remove' product.id%}" method="POST">
-                                    <input type="submit" value="Remove">
+                                <form action="{% url 'authentication:cart_remove' product.id %}" method="POST">
                                     {% csrf_token %}
+                                    <div style="margin-bottom: 20px;">
+                                        <input type="submit" value="Убрать из заказа" class="login__button" style="font-size: 0.7rem; padding: 0.4rem 1rem;">
+                                    </div>
                                 </form>
                             </td>
                         </tr>
                     {% endwith %}
                 {% endfor %}
                 <tr class="total">
-                    <td>Total</td>
+                    <td><strong>Итого:</strong></td>
                     <td colspan="2"></td>
-                    <td class="num">{{ cart.get_total_price }} Руб.</td>
+                    <td><strong>{{ cart.get_total_price }} Руб.</strong></td>
                 </tr>
             </tbody>
         </table>
-
+        <div class="centered-container" style="margin-bottom: 40px;">
+            <form method="POST" class="checkout-form">
+                {% csrf_token %}
+                <h2 style="text-align: center;">
+                    Оформить заказ
+                </h2>
+                <label for="pickup_point_id" style="margin-left: 20px;">Пункт выдачи:</label>
+                <select name="pickup_point_id" id="pickup_point_id">
+                    {% for pickup_point in pickup_points %}
+                        <option value="{{ pickup_point.id }}">{{ pickup_point.address }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="make_ord" class="login__button">Оформить заказ</button>
+            </form>
+        </div>
         <form method="POST">
-            <label for="pickup_point_id">Пункт выдачи:</label>
-            <select name = "pickup_point_id" id="pickup_point_id">
-              {% for pickup_point in pickup_points %}
-                  <option value="{{ pickup_point.id }}">{{ pickup_point.address }}</option>
-              {% endfor %}
-            </select>
-
             {% csrf_token %}
-            <button type="submit" name="make_ord">Оформить заказ</button>
+            <input type="submit" name="back" class="login__button" value = "Назад">
         </form>
-
-
+        <footer class="footer">
+            <div class="foot-cop">© Harmony. All rights reserved.</div>
+        </footer>
     </body>
 </html>
 

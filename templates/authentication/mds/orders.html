@@ -1,23 +1,46 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
     <title>Заказы</title>
 </head>
 <body>
-    {% for order in orders %}
+
+  <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Просмотр заказов</h1>
+          </div>
+      </div>
+    </header>
+
+    <div class="orders-list">
+  {% for order in orders %}
+    <div class="order-card">
       <form action="{% url 'authentication:mds_order' order.id %}" method="POST">
-          {% csrf_token %}
+        {% csrf_token %}
+        <p><strong>Заказ:</strong> {{ order.id }}</p>
+        <p><strong>Пользователь:</strong> {{ order.user }}</p>
 
-          Заказ: {{ order.id }} Пользователя: {{ order.user }}
-
-          <input type="submit" value = "Просмотр заказа">
-        <br>
-        <br>
+        <input type="submit" value="Просмотр заказа" class="view-button">
       </form>
+    </div>
+  {% empty %}
+    <p>Заказов нет</p>
+  {% endfor %}
+</div>
 
-    {% empty %}
-      <li>Заказов нет</li>
-    {% endfor %}
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+
+<footer class="footer">
+      <div class="foot-cop">© Untitled. All rights reserved.</div>
+  </footer>
+
 </body>
 </html>

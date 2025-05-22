@@ -1,7 +1,13 @@
+<<<<<<< Updated upstream
+=======
+{% load static %}
+{% load widget_tweaks %}
+>>>>>>> Stashed changes
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<<<<<<< Updated upstream
     <title>Title</title>
 </head>
 <body>
@@ -20,5 +26,42 @@
             <input type="submit" name="report" value = "Показать отчет">
         </form>
     {% endfor %}
+=======
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+    <title>Отчеты</title>
+</head>
+<body>
+
+<header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Отчет</h1>
+          </div>
+      </div>
+    </header>
+    <section class="orders_table">
+        <div class="order">
+            {% for oi in orderitems %}
+
+                Товар {{ oi.product__name }}
+                <br>
+                Продавец {{ oi.product__supplier__name }}
+                <br>
+                Кол-во проданных {{ oi.total_sold }}
+
+                <br><br>
+            {% empty %}
+            <form method="POST">
+                    {% csrf_token %}
+                    <input type="submit" name="report" value = "Показать отчет" class="login__button">
+            </form>
+            {% endfor %}
+        </div>
+    </section>
+    <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+    </form>
+>>>>>>> Stashed changes
 </body>
 </html>

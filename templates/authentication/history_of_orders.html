@@ -1,35 +1,51 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>История заказов</title>
-</head>
-<body>
-    <H1>ИСТОРИЯ ЗАКАЗОВ</H1>
-
-    {% for order in orders%}
-            <li>
-              Заказ - {{ order.id }} <br>
-                    {% for item in orders_item %}
-                        {% if order.id == item.order.id %}
-                          Товар:  {{ item.product }}<br>
-                          Кол-во: {{ item.quantity }}<br>
-                          Цена: {{ item.price }}<br>
-                        {% endif %}
-                    {% endfor %}
-              Сумма заказа: {{ order.amount }}<br>
-              Пункт выдачи: {{ order.pickup_point }}
-            </li>
-    {% empty %}
-      <li>У вас ещё нет заказов</li>
-    {% endfor %}
-
-<!--    {% for item in orders_item %}-->
-<!--        {{ item.order.id }}-->
-<!--        {{ item.product }}-->
-<!--        {{ item.price }}-->
-<!--        {{ item.quantity }}-->
-<!--        <br><br>-->
-<!--    {% endfor %}-->
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+        <title>История заказов</title>
+    </head>
+    <body>
+        <header class="header">
+            <div class="index-banner">
+                <div class="index-banner__text">
+                    <h1 class="index-banner__title">История заказов</h1>
+                </div>
+            </div>
+        </header>
+        <section class="orders_table" >
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="order">
+                        <h2>Заказ №{{ order.id }}</h2>
+                        <p><strong>Пункт выдачи:</strong> {{ order.pickup_point }}</p>
+                        <p><strong>Сумма заказа:</strong> {{ order.amount }} ₽</p>
+                        <a href="">Состав заказа</a>
+                        <ul>
+                            {% for item in orders_item %}
+                                {% if item.order.id == order.id %}
+                                    <li>
+                                        Товар: {{ item.product }}
+                                        Кол-во: {{ item.quantity }}
+                                        Цена: {{ item.price }} ₽
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>У вас ещё нет заказов.</p>
+            {% endif %}
+        </section>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+        <footer class="footer">
+        <div class="foot-cop">© Harmony. All rights reserved.</div>
+        </footer>
+    </body>
 </html>

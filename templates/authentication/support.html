@@ -1,24 +1,44 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Тех. поддержка</title>
-</head>
-<body>
-
-  {% if messages %}
-  {% for message in messages %}
-    <p style="color: green;">{{ message }}</p>
-  {% endfor %}
-{% endif %}
-
-  <form method="POST">
-    {% csrf_token %}
-    <label for="text">Текст обращения</label>
-    <input type="text" id="text" name="text">
-
-    <button type="submit">Отправить обращение</button>
-  </form>
-
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+        <title>Тех. поддержка</title>
+    </head>
+    <body>
+        <header class="header">
+            <div class="index-banner">
+                <div class="index-banner__text">
+                    <h1 class="index-banner__title">обращение к технической поддержке</h1>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <section class="section white-thema">
+                <div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p style="color: green;">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" id="text" name="text" class="input_place" placeholder="Текст обращения" style="width: 240px;text-align: center;">
+                        <div>
+                            <button type="submit" class="login__button" name="send_support">Отправить обращение</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+        <footer class="footer">
+        <div class="foot-cop">© Harmony. All rights reserved.</div>
+        </footer>
+    </body>
 </html>

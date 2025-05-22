@@ -1,20 +1,45 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
     <title>Редактирование пункта выдачи</title>
 </head>
+
 <body>
-      <form method="POST">
+
+    <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Пункты выдачи</h1>
+          </div>
+      </div>
+    </header>
+
+      <div class="pickup-edit-form">
+    <h3>Редактировать пункт выдачи</h3>
+    <form method="POST">
         {% csrf_token %}
 
         <label for="address">Адрес:</label><br>
-        <input type="text" name="a" id="address" value="{{ pickup_point.address }}"><br><br>
+        <input type="text" name="a" id="address" value="{{ pickup_point.address }}" required><br><br>
 
         <label for="phone">Номер телефона:</label><br>
         <input type="text" name="p" id="phone" value="{{ pickup_point.phone }}" required><br><br>
 
-        <button type="submit">Сохранить изменения</button>
+        <button type="submit" name="edit_pickup_point" class="save-button">Сохранить изменения</button>
     </form>
+</div>
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+
+    <footer class="footer">
+      <div class="foot-cop">© Harmony. All rights reserved.</div>
+  </footer>
+
 </body>
 </html>

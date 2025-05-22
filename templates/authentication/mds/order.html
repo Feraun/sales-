@@ -1,44 +1,50 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
     <title>Заказы</title>
 </head>
 <body>
+  <div class="order-detail-container">
 
-          Заказ № {{ order.id }}
-          Пользователь: {{ order.user }}
+    <h2>Заказ №{{ order.id }}</h2>
+    <p><strong>Пользователь:</strong> {{ order.user }}</p>
 
-        <br>
-        <br>
-          <form method="POST">
-              {% csrf_token %}
-              {% for order_item in order_items %}
+    <form method="POST" class="order-items-form">
+      {% csrf_token %}
+      {% for order_item in order_items %}
+        <div class="order-item-card">
+          <p><strong>Товар:</strong> {{ order_item.product }}</p>
+          <p><strong>Цена:</strong> {{ order_item.price }} р/ш</p>
 
-                    {{ order_item.product }}
-              <br>
-                    {{ order_item.price }} р/ш
-              <br>
-                    <label for="quantity_{{ order_item.id }}">Кол-во:</label><br>
-                    <input type="number" name="quantities" id="quantity_{{ order_item.id }}"
-                           value="{{ order_item.quantity }}" min="1">
+          <label for="quantity_{{ order_item.id }}">Кол-во:</label>
+          <input type="number" name="quantities" id="quantity_{{ order_item.id }}"
+                 value="{{ order_item.quantity }}" min="1">
+        </div>
+      {% endfor %}
 
-        <br><br><br>
-              {% endfor %}
-              <input type="submit" value="Сохранить изменения">
-          </form>
-          <br>
-          Общая сумма {{ order.amount }}
-          <br>
-          Пункт выдачи {{ order.pickup_point }}
-            <br>
-          <br>
-      <form action="{% url 'authentication:mds_order_delete' order.id %}" method="POST">
-          {% csrf_token %}
-        <input type="submit" value="Удалить заказ">
-      </form>
+      <input type="submit" value="Сохранить изменения" name="save_order" class="delete-button">
+    </form>
 
-    <br>
-    <br>
+    <div class="order-summary">
+      <p><strong>Общая сумма:</strong> {{ order.amount }} ₽</p>
+      <p><strong>Пункт выдачи:</strong> {{ order.pickup_point }}</p>
+    </div>
+
+    <form action="{% url 'authentication:mds_order_delete' order.id %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value="Удалить заказ"  class="delete-button">
+    </form>
+    
+    <form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+
+  </div>
 </body>
+
 </html>

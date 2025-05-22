@@ -1,18 +1,34 @@
 <!-- dashboard.html -->
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Личный кабинет</title>
-</head>
-<body>
-    <h1>Личный кабинет</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit" name="make_order">Оформить заказ</button><br>
-        <button type="submit" name="history_of_orders">История заказов</button><br>
-        <button type="submit" name="support">Техническая поддержка</button><br>
-        <button type="submit" name="logout">Выйти</button>
-    </form>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+        <title>Личный кабинет</title>
+    </head>
+    <body>
+        <header class="header">
+            <div class="index-banner">
+                <div class="index-banner__text">
+                    <h1 class="index-banner__title">Добро пожаловать в личный кабинет!</h1>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <section class="section white-thema">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="make_order" class="login__button" style="width: 240px;">Оформить заказ</button><br>
+                    <button type="submit" name="history_of_orders" class="login__button" style="width: 240px;" >История заказов</button><br>
+                    <button type="submit" name="support" class="login__button" style="width: 240px;">Техническая поддержка</button><br>
+                    <button type="submit" name="logout" class="login__button" style="width: 240px;">Выйти</button>
+                </form>
+            </section>
+        </main>
+        <footer class="footer">
+            <div class="foot-cop">© Harmony. All rights reserved.</div>
+        </footer>
+    </body>
 </html>

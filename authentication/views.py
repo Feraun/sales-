@@ -2,9 +2,10 @@ from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Sum, Value
 from django.views.decorators.http import require_POST
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
@@ -22,13 +23,22 @@ def in_group_managers(user):
 # Create your views here.
 def sign_up(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('authentication:login')
-    else:
+        if "reg" in request.POST:    
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+
+                group = Group.objects.get(name = "Buyers")
+
+                group.user_set.add(user)
+
+                return redirect('authentication:login')
+        if "exit" in request.POST:
+                return redirect('authentication:login')
+    else: 
         form = UserCreationForm()
     return render(request, "authentication/register.html", {"form":form})
+
 
 def log_in(request):
     if request.method == 'POST':
@@ -77,6 +87,8 @@ def make_order(request):
     cart = Cart(request)
 
     if request.method == "POST":
+        if 'back' in request.POST:
+            return redirect('authentication:dashboard')
         if "make_ord" in request.POST:
 
             pickup_point_id = request.POST.get('pickup_point_id')
@@ -117,6 +129,10 @@ def make_order(request):
 
 @user_passes_test(in_group_buyers)
 def history_of_orders(request):
+
+    if 'back' in request.POST:
+        return redirect('authentication:dashboard')
+
     user_id = request.user.id
     orders = Order.objects.filter(user_id = user_id)
     orders_item = OrderItem.objects.filter(order__in = orders)
@@ -127,16 +143,18 @@ def history_of_orders(request):
 def support(request):
 
     if request.method == "POST":
+        if 'back' in request.POST:
+            return redirect('authentication:dashboard')
+        if 'send_support' in request.POST:
+            text_complaint = request.POST.get('text')
 
-        text_complaint = request.POST.get('text')
+            Support.objects.create(
+                user_id=request.user.id,
+                text_complaint = text_complaint,
+            )
 
-        Support.objects.create(
-            user_id=request.user.id,
-            text_complaint = text_complaint,
-        )
-
-        messages.success(request, "Ваш обращение успешно отправлено!")
-        return redirect(request.path)  # PRG: перенаправляем на тот же URL
+            messages.success(request, "Ваш обращение успешно отправлено!")
+            return redirect(request.path)  # PRG: перенаправляем на тот же URL
 
     supports = Support.objects.filter(user_id = request.user.id)
 
@@ -193,6 +211,11 @@ def manager_dashboard(request):
             return redirect('authentication:mds_orders')
         elif "supports" in request.POST:
             return redirect('authentication:mds_supports')
+        elif "reports" in request.POST:
+            return redirect('authentication:mds_reports')
+        elif "exit" in request.POST:
+            auth.logout(request)
+            return render(request, 'authentication/logout.html')
 
 
     return render(request, 'authentication/manager_dashboard.html')
@@ -202,26 +225,32 @@ def mds_categories(request):
     categories = Category.objects.all()
 
     if request.method == "POST":
-        name = request.POST.get('n')
-        describe = request.POST.get('d')
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
+        if 'add_category' in request.POST:
+            name = request.POST.get('n')
+            describe = request.POST.get('d')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL add_category(%s, %s)', [name, describe])
-        #print(name, describe)
-        return redirect(request.path)
+            with connection.cursor() as cursor:
+                cursor.execute('CALL add_category(%s, %s)', [name, describe])
+            #print(name, describe)
+            return redirect(request.path)
 
     return render(request, 'authentication/mds/categories.html', {'categories': categories})
 
 def mds_category_edit(request, category_id):
 
     if request.method == "POST":
-        name = request.POST.get('n')
-        describe = request.POST.get('d')
+        if 'back' in request.POST:
+            return redirect('authentication:mds_categories')
+        if 'edit_category' in request.POST:
+            name = request.POST.get('n')
+            describe = request.POST.get('d')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL edit_category(%s, %s, %s)', [category_id, name, describe])
-        #print(name, describe)
-        return redirect('authentication:mds_categories')
+            with connection.cursor() as cursor:
+                cursor.execute('CALL edit_category(%s, %s, %s)', [category_id, name, describe])
+            #print(name, describe)
+            return redirect('authentication:mds_categories')
 
     category = Category.objects.get(id = category_id)
 
@@ -237,17 +266,20 @@ def mds_products(request):
     products = Product.objects.all()
 
     if request.method == "POST":
-        name = request.POST.get('n')
-        describe = request.POST.get('d')
-        price = request.POST.get('p')
-        stock_quantity = request.POST.get('sq')
-        category_id = request.POST.get('cid')
-        supplier_id = request.POST.get('sid')
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
+        if 'add_product' in request.POST:
+            name = request.POST.get('n')
+            describe = request.POST.get('d')
+            price = request.POST.get('p')
+            stock_quantity = request.POST.get('sq')
+            category_id = request.POST.get('cid')
+            supplier_id = request.POST.get('sid')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL add_product(%s, %s, %s, %s, %s, %s)', [name, describe, price, stock_quantity, category_id, supplier_id])
+            with connection.cursor() as cursor:
+                 cursor.execute('CALL add_product(%s, %s, %s, %s, %s, %s)', [name, describe, price, stock_quantity, category_id, supplier_id])
 
-        return redirect(request.path)
+            return redirect(request.path)
 
     # categories = Category.objects.all()
     # suppliers = Supplier.objects.all()
@@ -255,19 +287,21 @@ def mds_products(request):
     return render(request, 'authentication/mds/products.html', { 'products': products})
 
 def mds_product_edit(request, product_id):
-
     if request.method == "POST":
-        name = request.POST.get('n')
-        describe = request.POST.get('d')
-        price = request.POST.get('p')
-        stock_quantity = request.POST.get('sq')
-        category_id = request.POST.get('cid')
-        supplier_id = request.POST.get('sid')
+        if 'back' in request.POST:
+            return redirect('authentication:mds_products')
+        if 'edit_product' in request.POST:
+            name = request.POST.get('n')
+            describe = request.POST.get('d')
+            price = request.POST.get('p')
+            stock_quantity = request.POST.get('sq')
+            category_id = request.POST.get('cid')
+            supplier_id = request.POST.get('sid')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL edit_product(%s, %s, %s, %s, %s, %s, %s)', [product_id, name, describe, price, stock_quantity, category_id, supplier_id])
-        #print(name, describe)
-        return redirect('authentication:mds_products')
+            with connection.cursor() as cursor:
+                cursor.execute('CALL edit_product(%s, %s, %s, %s, %s, %s, %s)', [product_id, name, describe, price, stock_quantity, category_id, supplier_id])
+            #print(name, describe)
+            return redirect('authentication:mds_products')
 
     product = Product.objects.get(id = product_id)
 
@@ -289,14 +323,17 @@ def mds_suppliers(request):
     suppliers = Supplier.objects.all()
 
     if request.method == "POST":
-        name = request.POST.get('n')
-        contact_info = request.POST.get('ci')
-        address = request.POST.get('a')
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
+        if 'add_supplier' in request.POST:
+            name = request.POST.get('n')
+            contact_info = request.POST.get('ci')
+            address = request.POST.get('a')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL add_supplier(%s, %s, %s)', [name, contact_info, address])
+            with connection.cursor() as cursor:
+                cursor.execute('CALL add_supplier(%s, %s, %s)', [name, contact_info, address])
 
-        return redirect(request.path)
+            return redirect(request.path)
 
     # categories = Category.objects.all()
     # suppliers = Supplier.objects.all()
@@ -306,14 +343,17 @@ def mds_suppliers(request):
 def mds_supplier_edit(request, supplier_id):
 
     if request.method == "POST":
-        name = request.POST.get('n')
-        contact_info = request.POST.get('ci')
-        address = request.POST.get('a')
+        if 'back' in request.POST:
+            return redirect('authentication:mds_suppliers')
+        if 'edit_supplier' in request.POST:
+            name = request.POST.get('n')
+            contact_info = request.POST.get('ci')
+            address = request.POST.get('a')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL edit_supplier(%s, %s, %s, %s)', [supplier_id, name, contact_info, address])
-        #print(name, describe)
-        return redirect('authentication:mds_suppliers')
+            with connection.cursor() as cursor:
+                cursor.execute('CALL edit_supplier(%s, %s, %s, %s)', [supplier_id, name, contact_info, address])
+            #print(name, describe)
+            return redirect('authentication:mds_suppliers')
 
     supplier = Supplier.objects.get(id = supplier_id)
 
@@ -329,13 +369,16 @@ def mds_pickup_points(request):
     pickup_points = Pickup_point.objects.all()
 
     if request.method == "POST":
-        address = request.POST.get('a')
-        phone = request.POST.get('p')
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
+        if 'add_pickup_point' in request.POST:
+            address = request.POST.get('a')
+            phone = request.POST.get('p')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL add_pickup_point(%s, %s)', [address, phone])
+            with connection.cursor() as cursor:
+                cursor.execute('CALL add_pickup_point(%s, %s)', [address, phone])
 
-        return redirect(request.path)
+            return redirect(request.path)
 
     # categories = Category.objects.all()
     # suppliers = Supplier.objects.all()
@@ -345,13 +388,16 @@ def mds_pickup_points(request):
 def mds_pickup_point_edit(request, pickup_point_id):
 
     if request.method == "POST":
-        address = request.POST.get('a')
-        phone = request.POST.get('p')
+        if 'back' in request.POST:
+            return redirect('authentication:mds_pickup_points')
+        if 'edit_pickup_point' in request.POST:
+            address = request.POST.get('a')
+            phone = request.POST.get('p')
 
-        with connection.cursor() as cursor:
-             cursor.execute('CALL edit_pickup_point(%s, %s, %s)', [pickup_point_id, address, phone])
-        #print(name, describe)
-        return redirect('authentication:mds_pickup_points')
+            with connection.cursor() as cursor:
+                cursor.execute('CALL edit_pickup_point(%s, %s, %s)', [pickup_point_id, address, phone])
+            #print(name, describe)
+            return redirect('authentication:mds_pickup_points')
 
     pickup_point = Pickup_point.objects.get(id = pickup_point_id)
 
@@ -370,7 +416,10 @@ def mds_orders(request):
     users = User.objects.all()
 
     if request.method == "POST":
-        return redirect('authentication:mds_order')
+        if 'order' in request.POST:
+            return redirect('authentication:mds_order')
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
 
 
     return render(request, 'authentication/mds/orders.html', {'orders': orders, 'orders_items': orders_items})
@@ -380,13 +429,16 @@ def mds_order(request, order_id):
     order_items = OrderItem.objects.filter(order = order)
 
     if request.method == 'POST':
-        quantities = request.POST.getlist('quantities')
+        if 'save_order' in request.POST:
+            quantities = request.POST.getlist('quantities')
 
-        for order_item, quantity in zip(order_items, quantities):
-            with connection.cursor() as cursor:
-                cursor.execute('CALL update_order_item_quantity(%s, %s)', [order_item.id, int(quantity)])
+            for order_item, quantity in zip(order_items, quantities):
+                with connection.cursor() as cursor:
+                    cursor.execute('CALL update_order_item_quantity(%s, %s)', [order_item.id, int(quantity)])
 
-        return redirect(request.path)
+            return redirect(request.path)
+        if 'back' in request.POST:
+            return redirect('authentication:mds_orders')
 
     return render(request, 'authentication/mds/order.html', {'order': order ,'order_items': order_items})
 
@@ -397,6 +449,10 @@ def mds_order_delete(request, order_id):
 
 def mds_supports(request):
     supports = Support.objects.all()
+
+    if request.POST:
+        if 'back' in request.POST:
+            return redirect('authentication:manager_dashboard')
 
     return render(request, 'authentication/mds/supports.html', {"supports": supports})
 
@@ -415,3 +471,16 @@ def reports(request):
         return render(request,'authentication/mds/reports.html', {'orderitems': orderitems})
     else:
         return render(request, 'authentication/mds/reports.html')
+=======
+        if 'report' in request.POST:
+            orderitems = (OrderItem.objects
+                          .values('product__name', 'product__supplier__name')
+                          .annotate(total_sold=Sum('quantity'))
+                          .order_by('-total_sold'))
+
+            return render(request,'authentication/mds/reports.html', {'orderitems': orderitems})
+        if 'back' in request.POST:
+            return redirect("authentication:manager_dashboard")
+    else:
+        return render(request, 'authentication/mds/reports.html')
+>>>>>>> Stashed changes

@@ -1,35 +1,59 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+    <title>Пункты выдачи</title>
 </head>
 <body>
-    {% for pickup_point in pickup_points %}
+
+  <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Пункты выдачи</h1>
+          </div>
+      </div>
+    </header>
+
+   <div class="pickup-point-list">
+  {% for pickup_point in pickup_points %}
+    <div class="pickup-point-card">
       <form action="{% url 'authentication:mds_pickup_point_delete' pickup_point.id %}" method="POST">
-          {% csrf_token %}
-          {{ pickup_point.address }}<br>
-          {{ pickup_point.phone }}<br>
-
-          <a href="{% url 'authentication:mds_pickup_point_edit' pickup_point.id %}">Редактировать</a>
-
-          <input type="submit" name="delete_pickup_point" value = "Удалить пункта выдачи">
-        <br>
-        <br>
-      </form>
-
-    {% empty %}
-      <li>Продукт нет</li>
-    {% endfor %}
-
-    <br>
-    <br>
-
-    <form method="POST">
         {% csrf_token %}
-        <input type="text" name="a" required placeholder="Адрес"><br>
-        <input type="text" name="p" placeholder="Моб. телефон" required><br>
-        <button type="submit" name="add_pickup_point">Добавить пункт выдачи</button>
-    </form>
+        <p><strong>Адрес:</strong> {{ pickup_point.address }}</p>
+        <p><strong>Телефон:</strong> {{ pickup_point.phone }}</p>
+
+        <a href="{% url 'authentication:mds_pickup_point_edit' pickup_point.id %}" class="edit-link">Редактировать</a>
+
+        <input type="submit" name="delete_pickup_point" value="Удалить пункт выдачи" class="delete-button">
+      </form>
+    </div>
+  {% empty %}
+    <p>Пунктов выдачи нет</p>
+  {% endfor %}
+</div>
+
+<hr>
+
+<div class="pickup-point-form">
+  <h3>Добавить пункт выдачи</h3>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="a" required placeholder="Адрес"><br>
+    <input type="text" name="p" required placeholder="Моб. телефон"><br>
+    <button type="submit" name="add_pickup_point" class="add-button">Добавить</button>
+  </form>
+</div>
+<form method="POST">
+            {% csrf_token %}
+            <input type="submit" name="back" class="login__button" value = "Назад">
+        </form>
+
+    <footer class="footer">
+      <div class="foot-cop">© Harmony. All rights reserved.</div>
+  </footer>
+
 </body>
 </html>

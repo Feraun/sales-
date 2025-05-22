@@ -1,6 +1,49 @@
-  <h2>Регистрация</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Отправить</button>
-  </form>
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'style.css'%}" type="text/css">
+  <title>Регистрация</title>
+</head>
+<body>
+  <header class="header">
+      <div class="index-banner">
+          <div class="index-banner__text">
+              <h1 class="index-banner__title">Регистрация</h1>
+              <div class="index-banner__subtitle">Создайте аккаунт, чтобы продолжить</div>
+          </div>
+      </div>
+  </header>
+  <main class="main">
+      <section class="section white-thema">
+          <form method="post">
+            {% csrf_token %}
+            <div> 
+              {{ form.username|add_class:"input_place"|attr:"placeholder:Логин" }}
+            </div>
+            <div>
+              {{ form.password1|add_class:"input_place"|attr:"placeholder:Пароль" }}
+            </div>
+            {{ form.password2|add_class:"input_place"|attr:"placeholder:Подтвердите пароль" }}
+            
+            
+            <div>
+              <button class="login__button" type="submit" name = "reg">Зарегистрироваться</button>
+            </div>
+          </form>
+          <form method="POST">
+            {% csrf_token %}
+            <div>
+              <button class="login__button" type="submit" name = "exit" style="width: 240px;">На главную</button>
+            </div>
+          </form>
+      </section>
+  </main>
+  <footer class="footer">
+      <div class="foot-cop">© Untitled. All rights reserved.</div>
+  </footer>
+</body>
+</html>
